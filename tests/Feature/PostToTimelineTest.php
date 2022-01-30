@@ -15,15 +15,34 @@ class PostToTimelineTest extends TestCase
     {
         $this->withoutExceptionHandling();
         $this->actingAs($user = User::factory()->create(),'api');
-        $response = $this->post('/api/posts', [
+
+        $this->actingAs($user = User::factory()->create(),'api');
+
+        $response = $this->post('/api/posts',[
             'data' => [
                 'type' => 'posts',
                 'attributes' => [
-                    'body' => 'Testing Body',
-                ],
+                    'body' => 'Testing body'
+                ]
             ]
-        ])->assertStatus(201);
+        ]);
 
         $post = Post::first();
+
+        $this->assertEquals('Testing body', $post->body);
+
+        $response->assertStatus(201)
+            ->assertJson([
+                'data' => [
+                    'type' => 'posts',
+                    'post_id' => $post->id,
+                    'attributes' => [
+                        'body' => 'Testing body',
+                    ]
+                ],
+                'links' => [
+                    'self' => url('/posts/'.$post->id),
+                ]
+            ]);
     }
 }

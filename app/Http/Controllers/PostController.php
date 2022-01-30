@@ -2,12 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Post;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
     public function store()
     {
-        return response([], 201);
+        $data = \request()->validate([
+            'data.attributes.body' => '',
+        ]);
+
+        $post = \request()->user()->posts()->create($data['data']['attributes']);
+        return response([
+            'data' => [
+                'type' => 'posts',
+                'post_id' => $post->id,
+                'attributes' => [
+                    'body' => 'Testing body',
+                ]
+            ],
+            'links' => [
+                'self' => url('/posts/'.$post->id),
+            ]
+        ], 201);
     }
 }
