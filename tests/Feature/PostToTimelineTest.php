@@ -28,7 +28,7 @@ class PostToTimelineTest extends TestCase
         ]);
 
         $post = Post::first();
-
+        $this->assertCount(1, Post::all());
         $this->assertEquals('Testing body', $post->body);
 
         $response->assertStatus(201)
